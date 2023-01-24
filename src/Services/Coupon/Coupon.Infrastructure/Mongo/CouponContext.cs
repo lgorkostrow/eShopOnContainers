@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.IdGenerators;
@@ -12,7 +11,7 @@ public class CouponContext
     
     private readonly IMongoDatabase _database = null;
 
-    public CouponContext(IOptions<MongoConfiguration> settings, ILogger<CouponContext> logger)
+    public CouponContext(IOptions<MongoConfiguration> settings)
     {
         var client = new MongoClient(settings.Value.ConnectionString);
 

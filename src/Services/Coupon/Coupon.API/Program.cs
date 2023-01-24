@@ -1,7 +1,9 @@
 using Coupon.API.Extensions;
+using Coupon.Application;
 using Coupon.Infrastructure;
 using Coupon.Infrastructure.Mongo;
 using HealthChecks.UI.Client;
+using MediatR;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,7 +20,8 @@ builder.Services
     .AddCustomHealthCheck(configuration);
 
 // Infrastructure layer
-builder.Services.AddServices(configuration);
+builder.Services.AddInfrastructureServices(configuration);
+builder.Services.AddApplicationServices();
 
 var app = builder.Build();
     

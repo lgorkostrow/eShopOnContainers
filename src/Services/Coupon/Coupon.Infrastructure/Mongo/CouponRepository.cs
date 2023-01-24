@@ -1,26 +1,20 @@
 using Coupon.Domain.AggregatesModel;
-using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
 namespace Coupon.Infrastructure.Mongo;
 
-public class CouponRepository : BaseRepository<Domain.AggregatesModel.Coupon>, ICouponRepository
+public class CouponRepository : ICouponRepository
 {
-    private const string CouponCollection = "CouponCollection";
-    
-    public CouponRepository(IOptions<MongoConfiguration> configuration) : base(configuration)
+    private readonly CouponContext _context;
+    public CouponRepository(CouponContext context)
     {
+        _context = context;
     }
 
-    protected override IMongoCollection<Domain.AggregatesModel.Coupon> GetCollection()
+    public Task<Domain.AggregatesModel.Coupon?> FindByCodeAsync(string code, CancellationToken cancellationToken)
     {
-        return MongoDatabase.GetCollection<Domain.AggregatesModel.Coupon>(CouponCollection);
-    }
-
-    public Task<Domain.AggregatesModel.Coupon?> FindByCodeAsync(string code)
-    {
-        return GetCollection()
+        return _context.Coupons
             .Find(x => x.Code == code)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(cancellationToken);
     }
 }

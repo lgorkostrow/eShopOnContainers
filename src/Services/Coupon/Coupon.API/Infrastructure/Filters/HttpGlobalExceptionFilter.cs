@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using Coupon.API.Infrastructure.ActionResults;
+using Coupon.Shared.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -21,9 +22,8 @@ public class HttpGlobalExceptionFilter : IExceptionFilter
         logger.LogError(new EventId(context.Exception.HResult),
             context.Exception,
             context.Exception.Message);
-
-        // TODO: Create domain exception
-        if (context.Exception.GetType() == typeof(Exception))
+        
+        if (context.Exception.GetType() == typeof(DomainException))
         {
             var problemDetails = new ValidationProblemDetails()
             {
@@ -36,6 +36,15 @@ public class HttpGlobalExceptionFilter : IExceptionFilter
 
             context.Result = new BadRequestObjectResult(problemDetails);
             context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+        }
+        else if (context.Exception.GetType() == typeof(EntityNotFoundException))
+        {
+            var json = new JsonErrorResponse
+            {
+                Messages = new[] { context.Exception.Message }
+            };
+            context.Result = new NotFoundObjectResult(json);
+            context.HttpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
         }
         else
         {
