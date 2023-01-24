@@ -55,7 +55,7 @@ public static class CustomExtensionMethods
         
         hcBuilder.AddCheck("self", () => HealthCheckResult.Healthy())
             .AddMongoDb(
-                configuration["ConnectionString"],
+                configuration.GetSection("MongoConfiguration").GetValue<string>("ConnectionString"),
                 name: "CouponCollection-check",
                 tags: new string[] { "couponcollection" });
 
