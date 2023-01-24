@@ -104,8 +104,8 @@ services:
   coupon-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionString=mongodb://nosqldata
-      - CouponMongoDatabase=CouponDb
+      - MongoConfiguration:ConnectionString=mongodb://nosqldata
+      - MongoConfiguration:CouponMongoDatabase=CouponDb
       - EventBusConnection=${ESHOP_AZURE_SERVICE_BUS:-rabbitmq}
       - EventBusUserName=${ESHOP_SERVICE_BUS_USERNAME}
       - EventBusPassword=${ESHOP_SERVICE_BUS_PASSWORD}

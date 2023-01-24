@@ -1,4 +1,6 @@
 using Coupon.API.Extensions;
+using Coupon.Infrastructure;
+using Coupon.Infrastructure.Mongo;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
@@ -15,7 +17,12 @@ builder.Services
     .AddEventBus(configuration)
     .AddCustomHealthCheck(configuration);
 
+// Infrastructure layer
+builder.Services.AddServices(configuration);
+
 var app = builder.Build();
+    
+app.SeedDatabaseStrategy<CouponContext>(context => new CouponSeed().SeedAsync(context).Wait());
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

@@ -1,4 +1,3 @@
-using Coupon.Domain.AggregatesModel;
 using Coupon.Infrastructure.Mongo;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +11,6 @@ public static class ContainerExtension
         serviceCollection.Configure<MongoConfiguration>(mongoConfiguration => 
             configuration.GetSection("MongoConfiguration").Bind(mongoConfiguration));
 
-        serviceCollection.AddSingleton<ICouponRepository, CouponRepository>();
+        serviceCollection.AddSingleton<CouponContext>();
     }
 }
