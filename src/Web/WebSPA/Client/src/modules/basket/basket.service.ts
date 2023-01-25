@@ -110,6 +110,7 @@ export class BasketService {
         basketCheckout.cardholdername = order.cardholdername;
         basketCheckout.total = 0;
         basketCheckout.expiration = order.expiration;
+        basketCheckout.couponCode = 'Test-Coupon-Code';
 
         return basketCheckout;
     }

@@ -1,3 +1,4 @@
+using Coupon.Application.Features.Coupon.Models;
 using Coupon.Domain.AggregatesModel;
 using Coupon.Shared;
 using Coupon.Shared.Exceptions;
@@ -5,11 +6,11 @@ using MediatR;
 
 namespace Coupon.Application.Features.Coupon.Queries;
 
-public class IsCouponValidQuery : BaseQuery<bool>
+public class FindValidCouponByCode : BaseQuery<CouponDto>
 {
     public string Code { get; set; }
     
-    public class IsCouponValidQueryHandler : IRequestHandler<IsCouponValidQuery, bool>
+    public class IsCouponValidQueryHandler : IRequestHandler<FindValidCouponByCode, CouponDto>
     {
         private readonly ICouponRepository _repository;
 
@@ -18,7 +19,7 @@ public class IsCouponValidQuery : BaseQuery<bool>
             _repository = repository;
         }
 
-        public async Task<bool> Handle(IsCouponValidQuery request, CancellationToken cancellationToken)
+        public async Task<CouponDto> Handle(FindValidCouponByCode request, CancellationToken cancellationToken)
         {
             var coupon = await _repository.FindByCodeAsync(request.Code, cancellationToken);
             if (coupon is null)
@@ -31,7 +32,11 @@ public class IsCouponValidQuery : BaseQuery<bool>
                 throw new DomainException($"Coupon with code {request.Code} is already used");
             }
 
-            return true;
+            return new CouponDto(
+                coupon.Id,
+                coupon.Code,
+                coupon.Discount
+            );
         }
     }
 }

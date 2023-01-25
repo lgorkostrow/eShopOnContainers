@@ -12,5 +12,6 @@
     cardtypeid: number;
     buyer: string;
     ordernumber: string;
+    couponCode: string;
     total: number;
 }

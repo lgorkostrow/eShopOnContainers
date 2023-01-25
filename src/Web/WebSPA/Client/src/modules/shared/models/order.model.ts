@@ -15,5 +15,6 @@ export interface IOrder {
     buyer: string;
     ordernumber: string;
     total: number;
+    couponCode: string;
     orderItems: IOrderItem[];
 }
