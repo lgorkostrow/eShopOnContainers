@@ -37,7 +37,19 @@ public class CreateOrderCommandHandler
         // methods and constructor so validations, invariants and business logic 
         // make sure that consistency is preserved across the whole aggregate
         var address = new Address(message.Street, message.City, message.State, message.Country, message.ZipCode);
-        var order = new Order(message.UserId, message.UserName, address, message.CardTypeId, message.CardNumber, message.CardSecurityNumber, message.CardHolderName, message.CardExpiration);
+        var discount = message.CouponCode is not null && message.Discount is not null
+            ? new Discount(message.CouponCode, (decimal) message.Discount)
+            : null;
+        var order = new Order(
+            message.UserId,
+            message.UserName,
+            address, message.CardTypeId,
+            message.CardNumber,
+            message.CardSecurityNumber,
+            message.CardHolderName,
+            message.CardExpiration,
+            discount: discount
+        );
 
         foreach (var item in message.OrderItems)
         {

@@ -33,6 +33,8 @@ public record UserCheckoutAcceptedIntegrationEvent : IntegrationEvent
     public Guid RequestId { get; init; }
     
     public string CouponCode { get; init; }
+    
+    public decimal? Discount { get; init; }
 
     public CustomerBasket Basket { get; }
 
@@ -52,6 +54,7 @@ public record UserCheckoutAcceptedIntegrationEvent : IntegrationEvent
         string buyer,
         Guid requestId,
         string couponCode,
+        decimal? discount,
         CustomerBasket basket
     )
     {
@@ -70,6 +73,7 @@ public record UserCheckoutAcceptedIntegrationEvent : IntegrationEvent
         Buyer = buyer;
         Basket = basket;
         CouponCode = couponCode;
+        Discount = discount;
         RequestId = requestId;
     }
 }

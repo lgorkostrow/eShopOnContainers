@@ -74,6 +74,7 @@ public class BasketController : ControllerBase
             basketCheckout.Buyer,
             basketCheckout.RequestId,
             basketCheckout.CouponCode,
+            basketCheckout.Discount,
             basket
         );
 
