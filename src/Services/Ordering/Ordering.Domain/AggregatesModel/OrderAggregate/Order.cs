@@ -20,8 +20,8 @@ public class Order
     private int _orderStatusId;
 
     private string _description;
-
-
+    
+    public Discount Discount { get; private set; }
 
     // Draft orders have this set to true. Currently we don't check anywhere the draft status of an Order, but we could do it if needed
     private bool _isDraft;
@@ -48,14 +48,26 @@ public class Order
         _isDraft = false;
     }
 
-    public Order(string userId, string userName, Address address, int cardTypeId, string cardNumber, string cardSecurityNumber,
-            string cardHolderName, DateTime cardExpiration, int? buyerId = null, int? paymentMethodId = null) : this()
+    public Order(
+        string userId, 
+        string userName,
+        Address address,
+        int cardTypeId,
+        string cardNumber,
+        string cardSecurityNumber,
+        string cardHolderName,
+        DateTime cardExpiration,
+        int? buyerId = null,
+        int? paymentMethodId = null,
+        Discount discount = null
+    ) : this()
     {
         _buyerId = buyerId;
         _paymentMethodId = paymentMethodId;
         _orderStatusId = OrderStatus.Submitted.Id;
         _orderDate = DateTime.UtcNow;
         Address = address;
+        Discount = discount;
 
         // Add the OrderStarterDomainEvent to the domain events collection 
         // to be raised/dispatched when comitting changes into the Database [ After DbContext.SaveChanges() ]
