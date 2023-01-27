@@ -1,7 +1,7 @@
 ﻿namespace Microsoft.eShopOnContainers.Services.Ordering.API.Application.DomainEventHandlers.OrderGracePeriodConfirmed;
     
 public class OrderStatusChangedToAwaitingValidationDomainEventHandler
-                : INotificationHandler<OrderStatusChangedToAwaitingValidationDomainEvent>
+                : INotificationHandler<OrderStatusChangedToAwaitingStockValidationDomainEvent>
 {
     private readonly IOrderRepository _orderRepository;
     private readonly ILoggerFactory _logger;
@@ -19,20 +19,20 @@ public class OrderStatusChangedToAwaitingValidationDomainEventHandler
         _orderingIntegrationEventService = orderingIntegrationEventService;
     }
 
-    public async Task Handle(OrderStatusChangedToAwaitingValidationDomainEvent orderStatusChangedToAwaitingValidationDomainEvent, CancellationToken cancellationToken)
+    public async Task Handle(OrderStatusChangedToAwaitingStockValidationDomainEvent orderStatusChangedToAwaitingStockValidationDomainEvent, CancellationToken cancellationToken)
     {
-        _logger.CreateLogger<OrderStatusChangedToAwaitingValidationDomainEvent>()
+        _logger.CreateLogger<OrderStatusChangedToAwaitingStockValidationDomainEvent>()
             .LogTrace("Order with Id: {OrderId} has been successfully updated to status {Status} ({Id})",
-                orderStatusChangedToAwaitingValidationDomainEvent.OrderId, nameof(OrderStatus.AwaitingValidation), OrderStatus.AwaitingValidation.Id);
+                orderStatusChangedToAwaitingStockValidationDomainEvent.OrderId, nameof(OrderStatus.AwaitingStockValidation), OrderStatus.AwaitingStockValidation.Id);
 
-        var order = await _orderRepository.GetAsync(orderStatusChangedToAwaitingValidationDomainEvent.OrderId);
+        var order = await _orderRepository.GetAsync(orderStatusChangedToAwaitingStockValidationDomainEvent.OrderId);
 
         var buyer = await _buyerRepository.FindByIdAsync(order.GetBuyerId.Value.ToString());
 
-        var orderStockList = orderStatusChangedToAwaitingValidationDomainEvent.OrderItems
+        var orderStockList = orderStatusChangedToAwaitingStockValidationDomainEvent.OrderItems
             .Select(orderItem => new OrderStockItem(orderItem.ProductId, orderItem.GetUnits()));
 
-        var orderStatusChangedToAwaitingValidationIntegrationEvent = new OrderStatusChangedToAwaitingValidationIntegrationEvent(
+        var orderStatusChangedToAwaitingValidationIntegrationEvent = new OrderStatusChangedToAwaitingStockValidationIntegrationEvent(
             order.Id, order.OrderStatus.Name, buyer.Name, orderStockList);
         await _orderingIntegrationEventService.AddAndSaveEventAsync(orderStatusChangedToAwaitingValidationIntegrationEvent);
     }

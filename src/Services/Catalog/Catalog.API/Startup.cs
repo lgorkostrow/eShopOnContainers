@@ -86,7 +86,7 @@ public class Startup
     protected virtual void ConfigureEventBus(IApplicationBuilder app)
     {
         var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
-        eventBus.Subscribe<OrderStatusChangedToAwaitingValidationIntegrationEvent, OrderStatusChangedToAwaitingValidationIntegrationEventHandler>();
+        eventBus.Subscribe<OrderStatusChangedToAwaitingStockValidationIntegrationEvent, OrderStatusChangedToAwaitingStockValidationIntegrationEventHandler>();
         eventBus.Subscribe<OrderStatusChangedToPaidIntegrationEvent, OrderStatusChangedToPaidIntegrationEventHandler>();
     }
 }
@@ -325,7 +325,7 @@ public static class CustomExtensionMethods
         }
 
         services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
-        services.AddTransient<OrderStatusChangedToAwaitingValidationIntegrationEventHandler>();
+        services.AddTransient<OrderStatusChangedToAwaitingStockValidationIntegrationEventHandler>();
         services.AddTransient<OrderStatusChangedToPaidIntegrationEventHandler>();
 
         return services;

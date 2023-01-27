@@ -1,3 +1,4 @@
+using Coupon.Application.Features.Coupon.Models;
 using Coupon.Application.Features.Coupon.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -13,17 +14,15 @@ public class CouponController : ControllerBase
 
     public CouponController(IMediator mediator)
     {
-        _mediator = mediator;
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
-    [HttpGet("{code}/check-validity")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [HttpGet("{code}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> IsCouponValidAsync([FromRoute] IsCouponValidQuery query)
+    public async Task<ActionResult<CouponDto>> FindValidCouponByCodeAsync([FromRoute] FindValidCouponByCode query)
     {
-        await _mediator.Send(query);
-
-        return NoContent();
+        return await _mediator.Send(query);
     }
 }

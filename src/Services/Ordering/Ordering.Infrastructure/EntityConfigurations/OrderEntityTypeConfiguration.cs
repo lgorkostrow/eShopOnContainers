@@ -25,6 +25,12 @@ class OrderEntityTypeConfiguration : IEntityTypeConfiguration<Order>
             });
 
         orderConfiguration
+            .OwnsOne(o => o.Discount, d =>
+            {
+                d.Property(x => x.DiscountCode).HasMaxLength(100);
+            });
+
+        orderConfiguration
             .Property<int?>("_buyerId")
             .UsePropertyAccessMode(PropertyAccessMode.Field)
             .HasColumnName("BuyerId")

@@ -1,16 +1,16 @@
 ﻿namespace Microsoft.eShopOnContainers.Payment.API.IntegrationEvents.EventHandling;
     
-public class OrderStatusChangedToStockConfirmedIntegrationEventHandler :
-    IIntegrationEventHandler<OrderStatusChangedToStockConfirmedIntegrationEvent>
+public class OrderStatusChangedToValidatedIntegrationEventHandler :
+    IIntegrationEventHandler<OrderStatusChangedToValidatedIntegrationEvent>
 {
     private readonly IEventBus _eventBus;
     private readonly PaymentSettings _settings;
-    private readonly ILogger<OrderStatusChangedToStockConfirmedIntegrationEventHandler> _logger;
+    private readonly ILogger<OrderStatusChangedToValidatedIntegrationEventHandler> _logger;
 
-    public OrderStatusChangedToStockConfirmedIntegrationEventHandler(
+    public OrderStatusChangedToValidatedIntegrationEventHandler(
         IEventBus eventBus,
         IOptionsSnapshot<PaymentSettings> settings,
-        ILogger<OrderStatusChangedToStockConfirmedIntegrationEventHandler> logger)
+        ILogger<OrderStatusChangedToValidatedIntegrationEventHandler> logger)
     {
         _eventBus = eventBus;
         _settings = settings.Value;
@@ -19,7 +19,7 @@ public class OrderStatusChangedToStockConfirmedIntegrationEventHandler :
         _logger.LogTrace("PaymentSettings: {@PaymentSettings}", _settings);
     }
 
-    public async Task Handle(OrderStatusChangedToStockConfirmedIntegrationEvent @event)
+    public async Task Handle(OrderStatusChangedToValidatedIntegrationEvent @event)
     {
         using (LogContext.PushProperty("IntegrationEventContext", $"{@event.Id}-{Program.AppName}"))
         {

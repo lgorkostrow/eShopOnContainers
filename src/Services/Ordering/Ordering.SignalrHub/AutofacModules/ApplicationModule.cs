@@ -13,7 +13,7 @@ public class ApplicationModule
     protected override void Load(ContainerBuilder builder)
     {
 
-        builder.RegisterAssemblyTypes(typeof(OrderStatusChangedToAwaitingValidationIntegrationEvent).GetTypeInfo().Assembly)
+        builder.RegisterAssemblyTypes(typeof(OrderStatusChangedToAwaitingStockValidationIntegrationEvent).GetTypeInfo().Assembly)
             .AsClosedTypesOf(typeof(IIntegrationEventHandler<>));
 
     }

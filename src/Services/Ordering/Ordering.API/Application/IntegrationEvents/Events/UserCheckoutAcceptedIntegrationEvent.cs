@@ -29,13 +29,32 @@ public record UserCheckoutAcceptedIntegrationEvent : IntegrationEvent
     public string Buyer { get; set; }
 
     public Guid RequestId { get; set; }
+    
+    public string CouponCode { get; set; }
+    
+    public decimal? Discount { get; set; }
 
     public CustomerBasket Basket { get; }
 
-    public UserCheckoutAcceptedIntegrationEvent(string userId, string userName, string city, string street,
-        string state, string country, string zipCode, string cardNumber, string cardHolderName,
-        DateTime cardExpiration, string cardSecurityNumber, int cardTypeId, string buyer, Guid requestId,
-        CustomerBasket basket)
+    public UserCheckoutAcceptedIntegrationEvent(
+        string userId, 
+        string userName,
+        string city,
+        string street,
+        string state,
+        string country,
+        string zipCode,
+        string cardNumber,
+        string cardHolderName,
+        DateTime cardExpiration,
+        string cardSecurityNumber,
+        int cardTypeId,
+        string buyer,
+        Guid requestId,
+        string couponCode,
+        decimal? discount,
+        CustomerBasket basket
+    )
     {
         UserId = userId;
         City = city;
@@ -51,7 +70,8 @@ public record UserCheckoutAcceptedIntegrationEvent : IntegrationEvent
         Buyer = buyer;
         Basket = basket;
         RequestId = requestId;
+        CouponCode = couponCode;
+        Discount = discount;
         UserName = userName;
     }
-
 }
