@@ -1,20 +1,21 @@
-﻿namespace Microsoft.eShopOnContainers.Services.Ordering.SignalrHub.IntegrationEvents;
+﻿namespace Microsoft.eShopOnContainers.Services.Ordering.SignalrHub.IntegrationEvents.EventHandling;
 
-public class OrderStatusChangedToAwaitingValidationIntegrationEventHandler : IIntegrationEventHandler<OrderStatusChangedToAwaitingValidationIntegrationEvent>
+public class OrderStatusChangedToValidatedIntegrationEventHandler :
+    IIntegrationEventHandler<OrderStatusChangedToValidatedIntegrationEvent>
 {
     private readonly IHubContext<NotificationsHub> _hubContext;
-    private readonly ILogger<OrderStatusChangedToAwaitingValidationIntegrationEventHandler> _logger;
+    private readonly ILogger<OrderStatusChangedToValidatedIntegrationEventHandler> _logger;
 
-    public OrderStatusChangedToAwaitingValidationIntegrationEventHandler(
+    public OrderStatusChangedToValidatedIntegrationEventHandler(
         IHubContext<NotificationsHub> hubContext,
-        ILogger<OrderStatusChangedToAwaitingValidationIntegrationEventHandler> logger)
+        ILogger<OrderStatusChangedToValidatedIntegrationEventHandler> logger)
     {
         _hubContext = hubContext ?? throw new ArgumentNullException(nameof(hubContext));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
 
-    public async Task Handle(OrderStatusChangedToAwaitingValidationIntegrationEvent @event)
+    public async Task Handle(OrderStatusChangedToValidatedIntegrationEvent @event)
     {
         using (LogContext.PushProperty("IntegrationEventContext", $"{@event.Id}-{Program.AppName}"))
         {

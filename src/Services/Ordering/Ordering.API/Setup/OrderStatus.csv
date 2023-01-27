@@ -1,7 +1,8 @@
 OrderStatus
 Submitted
-AwaitingValidation
-StockConfirmed
+AwaitingStockValidation
+AwaitingCouponValidation
+Validated
 Paid
 Shipped
 Cancelled

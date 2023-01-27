@@ -15,6 +15,11 @@ public class Discount : ValueObject
         DiscountConfirmed = false;
     }
 
+    public void ConfirmDiscount()
+    {
+        DiscountConfirmed = true;
+    }
+
     protected override IEnumerable<object> GetEqualityComponents()
     {
         yield return DiscountCode;

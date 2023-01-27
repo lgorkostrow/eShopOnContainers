@@ -114,29 +114,53 @@ public class Order
         _buyerId = id;
     }
 
-    public void SetAwaitingValidationStatus()
+    public void SetAwaitingStockValidationStatus()
     {
         if (_orderStatusId == OrderStatus.Submitted.Id)
         {
-            AddDomainEvent(new OrderStatusChangedToAwaitingValidationDomainEvent(Id, _orderItems));
-            _orderStatusId = OrderStatus.AwaitingValidation.Id;
+            AddDomainEvent(new OrderStatusChangedToAwaitingStockValidationDomainEvent(Id, _orderItems));
+            _orderStatusId = OrderStatus.AwaitingStockValidation.Id;
         }
     }
 
-    public void SetStockConfirmedStatus()
+    public void StockConfirmed()
     {
-        if (_orderStatusId == OrderStatus.AwaitingValidation.Id)
+        if (_orderStatusId != OrderStatus.AwaitingStockValidation.Id)
         {
-            AddDomainEvent(new OrderStatusChangedToStockConfirmedDomainEvent(Id));
-
-            _orderStatusId = OrderStatus.StockConfirmed.Id;
-            _description = "All the items were confirmed with available stock.";
+            return;
         }
+
+        if (Discount is not null)
+        {
+            AddDomainEvent(new OrderStatusChangedToAwaitingCouponValidationDomainEvent(Id, Discount.DiscountCode));
+            _orderStatusId = OrderStatus.AwaitingCouponValidation.Id;
+            
+            return;
+        }
+        
+        SetValidatedStatus();
+    }
+
+    public void SetValidatedStatus()
+    {
+        if (_orderStatusId != OrderStatus.AwaitingStockValidation.Id && _orderStatusId != OrderStatus.AwaitingCouponValidation.Id)
+        {
+            return;
+        }
+
+        if (Discount is not null && _orderStatusId == OrderStatus.AwaitingCouponValidation.Id)
+        {
+            Discount.ConfirmDiscount();
+        }
+        
+        AddDomainEvent(new OrderStatusChangedToValidatedDomainEvent(Id));
+
+        _orderStatusId = OrderStatus.Validated.Id;
     }
 
     public void SetPaidStatus()
     {
-        if (_orderStatusId == OrderStatus.StockConfirmed.Id)
+        if (_orderStatusId == OrderStatus.Validated.Id)
         {
             AddDomainEvent(new OrderStatusChangedToPaidDomainEvent(Id, OrderItems));
 
@@ -172,7 +196,7 @@ public class Order
 
     public void SetCancelledStatusWhenStockIsRejected(IEnumerable<int> orderStockRejectedItems)
     {
-        if (_orderStatusId == OrderStatus.AwaitingValidation.Id)
+        if (_orderStatusId == OrderStatus.AwaitingStockValidation.Id)
         {
             _orderStatusId = OrderStatus.Cancelled.Id;
 

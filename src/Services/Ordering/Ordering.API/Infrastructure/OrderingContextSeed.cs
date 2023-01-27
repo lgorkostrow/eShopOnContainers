@@ -127,15 +127,7 @@ public class OrderingContextSeed
 
     private IEnumerable<OrderStatus> GetPredefinedOrderStatus()
     {
-        return new List<OrderStatus>()
-        {
-            OrderStatus.Submitted,
-            OrderStatus.AwaitingValidation,
-            OrderStatus.StockConfirmed,
-            OrderStatus.Paid,
-            OrderStatus.Shipped,
-            OrderStatus.Cancelled
-        };
+        return OrderStatus.List();
     }
 
     private string[] GetHeaders(string[] requiredHeaders, string csvfile)

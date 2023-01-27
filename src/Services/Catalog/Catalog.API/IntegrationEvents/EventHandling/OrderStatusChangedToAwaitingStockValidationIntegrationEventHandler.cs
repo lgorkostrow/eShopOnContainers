@@ -1,23 +1,23 @@
 ﻿namespace Microsoft.eShopOnContainers.Services.Catalog.API.IntegrationEvents.EventHandling;
     
-public class OrderStatusChangedToAwaitingValidationIntegrationEventHandler :
-    IIntegrationEventHandler<OrderStatusChangedToAwaitingValidationIntegrationEvent>
+public class OrderStatusChangedToAwaitingStockValidationIntegrationEventHandler :
+    IIntegrationEventHandler<OrderStatusChangedToAwaitingStockValidationIntegrationEvent>
 {
     private readonly CatalogContext _catalogContext;
     private readonly ICatalogIntegrationEventService _catalogIntegrationEventService;
-    private readonly ILogger<OrderStatusChangedToAwaitingValidationIntegrationEventHandler> _logger;
+    private readonly ILogger<OrderStatusChangedToAwaitingStockValidationIntegrationEventHandler> _logger;
 
-    public OrderStatusChangedToAwaitingValidationIntegrationEventHandler(
+    public OrderStatusChangedToAwaitingStockValidationIntegrationEventHandler(
         CatalogContext catalogContext,
         ICatalogIntegrationEventService catalogIntegrationEventService,
-        ILogger<OrderStatusChangedToAwaitingValidationIntegrationEventHandler> logger)
+        ILogger<OrderStatusChangedToAwaitingStockValidationIntegrationEventHandler> logger)
     {
         _catalogContext = catalogContext;
         _catalogIntegrationEventService = catalogIntegrationEventService;
         _logger = logger ?? throw new System.ArgumentNullException(nameof(logger));
     }
 
-    public async Task Handle(OrderStatusChangedToAwaitingValidationIntegrationEvent @event)
+    public async Task Handle(OrderStatusChangedToAwaitingStockValidationIntegrationEvent @event)
     {
         using (LogContext.PushProperty("IntegrationEventContext", $"{@event.Id}-{Program.AppName}"))
         {
