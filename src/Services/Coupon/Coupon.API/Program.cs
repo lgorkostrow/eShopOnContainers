@@ -1,9 +1,10 @@
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
 using Coupon.API.Extensions;
 using Coupon.Application;
 using Coupon.Infrastructure;
 using Coupon.Infrastructure.Mongo;
 using HealthChecks.UI.Client;
-using MediatR;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,7 @@ builder.Services
     .AddAppInsight(configuration)
     .AddCustomMVC()
     .AddCustomOptions(configuration)
+    .AddCustomIntegrations(configuration)
     .AddEventBus(configuration)
     .AddCustomHealthCheck(configuration);
 
@@ -23,8 +25,11 @@ builder.Services
 builder.Services.AddInfrastructureServices(configuration);
 builder.Services.AddApplicationServices();
 
+// Autofac
+builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
+
 var app = builder.Build();
-    
+
 app.SeedDatabaseStrategy<CouponContext>(context => new CouponSeed().SeedAsync(context).Wait());
 
 // Configure the HTTP request pipeline.
@@ -59,5 +64,7 @@ app.UseEndpoints(endpoints =>
         Predicate = r => r.Name.Contains("self")
     });
 });
+
+app.RegisterApplicationIntegrationEvents();
 
 app.Run();

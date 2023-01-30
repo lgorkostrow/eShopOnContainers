@@ -17,4 +17,11 @@ public class CouponRepository : ICouponRepository
             .Find(x => x.Code == code)
             .FirstOrDefaultAsync(cancellationToken);
     }
+
+    public Task Update(Domain.AggregatesModel.Coupon coupon, CancellationToken cancellationToken)
+    {
+        var filter = Builders<Domain.AggregatesModel.Coupon>.Filter.Eq("Id", coupon.Id);
+        
+        return _context.Coupons.ReplaceOneAsync(filter, coupon, cancellationToken: cancellationToken);
+    }
 }

@@ -1,3 +1,6 @@
+using Ordering.SignalrHub.IntegrationEvents.EventHandling;
+using Ordering.SignalrHub.IntegrationEvents.Events;
+
 namespace Microsoft.eShopOnContainers.Services.Ordering.SignalrHub;
 
 public class Startup
@@ -137,6 +140,7 @@ public class Startup
         var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
 
         eventBus.Subscribe<OrderStatusChangedToAwaitingStockValidationIntegrationEvent, OrderStatusChangedToAwaitingStockValidationIntegrationEventHandler>();
+        eventBus.Subscribe<OrderStatusChangedToAwaitingCouponValidationIntegrationEvent, OrderStatusChangedToAwaitingCouponValidationIntegrationEventHandler>();
         eventBus.Subscribe<OrderStatusChangedToPaidIntegrationEvent, OrderStatusChangedToPaidIntegrationEventHandler>();
         eventBus.Subscribe<OrderStatusChangedToValidatedIntegrationEvent, OrderStatusChangedToValidatedIntegrationEventHandler>();
         eventBus.Subscribe<OrderStatusChangedToShippedIntegrationEvent, OrderStatusChangedToShippedIntegrationEventHandler>();

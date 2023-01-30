@@ -15,8 +15,9 @@ public class Discount : ValueObject
         DiscountConfirmed = false;
     }
 
-    public void ConfirmDiscount()
+    public void ConfirmDiscount(decimal discount)
     {
+        Amount = discount;
         DiscountConfirmed = true;
     }
 

@@ -141,6 +141,22 @@ public class Order
         SetValidatedStatus();
     }
 
+    public void ConfirmDiscount(decimal discount)
+    {
+        if (Discount is not null && _orderStatusId == OrderStatus.AwaitingCouponValidation.Id)
+        {
+            Discount.ConfirmDiscount(discount);
+        }
+    }
+
+    public void RemoveDiscount()
+    {
+        if (Discount is not null && _orderStatusId == OrderStatus.AwaitingCouponValidation.Id)
+        {
+            Discount = null;
+        }
+    }
+
     public void SetValidatedStatus()
     {
         if (_orderStatusId != OrderStatus.AwaitingStockValidation.Id && _orderStatusId != OrderStatus.AwaitingCouponValidation.Id)
@@ -148,11 +164,6 @@ public class Order
             return;
         }
 
-        if (Discount is not null && _orderStatusId == OrderStatus.AwaitingCouponValidation.Id)
-        {
-            Discount.ConfirmDiscount();
-        }
-        
         AddDomainEvent(new OrderStatusChangedToValidatedDomainEvent(Id));
 
         _orderStatusId = OrderStatus.Validated.Id;
