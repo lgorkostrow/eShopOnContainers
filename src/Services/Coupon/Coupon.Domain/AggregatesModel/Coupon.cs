@@ -17,7 +17,7 @@ public class Coupon : BaseEntity
         Discount = discount;
     }
 
-    public void UseForOrder(int orderId)
+    public void Consume(int orderId)
     {
         OrderId = orderId;
         Consumed = true;

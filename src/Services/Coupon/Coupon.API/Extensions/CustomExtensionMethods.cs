@@ -1,5 +1,4 @@
 using System.Data.Common;
-using System.Reflection;
 using Autofac;
 using Coupon.API.Infrastructure.Filters;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +8,6 @@ using Microsoft.eShopOnContainers.BuildingBlocks.EventBusRabbitMQ;
 using Microsoft.eShopOnContainers.BuildingBlocks.EventBusServiceBus;
 using Microsoft.eShopOnContainers.BuildingBlocks.IntegrationEventLogEF.Services;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using RabbitMQ.Client;
 
@@ -21,43 +19,41 @@ public static class CustomExtensionMethods
     {
         services.AddApplicationInsightsTelemetry(configuration);
         services.AddApplicationInsightsKubernetesEnricher();
-    
+
         return services;
     }
 
     public static IServiceCollection AddCustomMVC(this IServiceCollection services)
     {
-        services.AddControllers(options =>
-        {
-            options.Filters.Add(typeof(HttpGlobalExceptionFilter));
-        })
-        .AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true);
-    
+        services.AddControllers(options => { options.Filters.Add(typeof(HttpGlobalExceptionFilter)); })
+            .AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true);
+
         services.AddCors(options =>
         {
             options.AddPolicy("CorsPolicy",
                 builder => builder
-                .SetIsOriginAllowed((host) => true)
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-                .AllowCredentials());
+                    .SetIsOriginAllowed((host) => true)
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials());
         });
-    
+
         return services;
     }
 
-    public static IServiceCollection AddCustomHealthCheck(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddCustomHealthCheck(this IServiceCollection services,
+        IConfiguration configuration)
     {
         var accountName = configuration.GetValue<string>("AzureStorageAccountName");
         var accountKey = configuration.GetValue<string>("AzureStorageAccountKey");
-    
+
         var hcBuilder = services.AddHealthChecks();
-        
+
         hcBuilder.AddCheck("self", () => HealthCheckResult.Healthy())
             .AddMongoDb(
                 configuration.GetSection("MongoConfiguration").GetValue<string>("ConnectionString"),
                 name: "CouponCollection-check",
-                tags: new string[] { "couponcollection" });
+                tags: new string[] {"couponcollection"});
 
         if (configuration.GetValue<bool>("AzureServiceBusEnabled"))
         {
@@ -66,7 +62,7 @@ public static class CustomExtensionMethods
                     configuration["EventBusConnection"],
                     topicName: "eshop_event_bus",
                     name: "coupon-servicebus-check",
-                    tags: new string[] { "servicebus" });
+                    tags: new string[] {"servicebus"});
         }
         else
         {
@@ -74,9 +70,9 @@ public static class CustomExtensionMethods
                 .AddRabbitMQ(
                     $"amqp://{configuration["EventBusConnection"]}",
                     name: "coupon-rabbitmqbus-check",
-                    tags: new string[] { "rabbitmqbus" });
+                    tags: new string[] {"rabbitmqbus"});
         }
-    
+
         return services;
     }
 
@@ -96,7 +92,7 @@ public static class CustomExtensionMethods
 
                 return new BadRequestObjectResult(problemDetails)
                 {
-                    ContentTypes = { "application/problem+json", "application/problem+xml" }
+                    ContentTypes = {"application/problem+json", "application/problem+xml"}
                 };
             };
         });
@@ -104,10 +100,65 @@ public static class CustomExtensionMethods
         return services;
     }
 
+    public static IServiceCollection AddCustomIntegrations(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        services.AddTransient<Func<DbConnection, IIntegrationEventLogService>>(
+            sp => (DbConnection c) => new IntegrationEventLogService(c));
+
+        // services.AddTransient<IOrderingIntegrationEventService, OrderingIntegrationEventService>();
+
+        if (configuration.GetValue<bool>("AzureServiceBusEnabled"))
+        {
+            services.AddSingleton<IServiceBusPersisterConnection>(sp =>
+            {
+                var serviceBusConnectionString = configuration["EventBusConnection"];
+
+                var subscriptionClientName = configuration["SubscriptionClientName"];
+
+                return new DefaultServiceBusPersisterConnection(serviceBusConnectionString);
+            });
+        }
+        else
+        {
+            services.AddSingleton<IRabbitMQPersistentConnection>(sp =>
+            {
+                var logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
+
+
+                var factory = new ConnectionFactory()
+                {
+                    HostName = configuration["EventBusConnection"],
+                    DispatchConsumersAsync = true
+                };
+
+                if (!string.IsNullOrEmpty(configuration["EventBusUserName"]))
+                {
+                    factory.UserName = configuration["EventBusUserName"];
+                }
+
+                if (!string.IsNullOrEmpty(configuration["EventBusPassword"]))
+                {
+                    factory.Password = configuration["EventBusPassword"];
+                }
+
+                var retryCount = 5;
+                if (!string.IsNullOrEmpty(configuration["EventBusRetryCount"]))
+                {
+                    retryCount = int.Parse(configuration["EventBusRetryCount"]);
+                }
+
+                return new DefaultRabbitMQPersistentConnection(factory, logger, retryCount);
+            });
+        }
+
+        return services;
+    }
+
     public static IServiceCollection AddSwagger(this IServiceCollection services)
     {
         services.AddSwaggerGen(options =>
-        {            
+        {
             options.SwaggerDoc("v1", new OpenApiInfo
             {
                 Title = "eShopOnContainers - Coupon HTTP API",
@@ -117,7 +168,6 @@ public static class CustomExtensionMethods
         });
 
         return services;
-
     }
 
     public static IServiceCollection AddEventBus(this IServiceCollection services, IConfiguration configuration)
@@ -131,11 +181,10 @@ public static class CustomExtensionMethods
                 var logger = sp.GetRequiredService<ILogger<EventBusServiceBus>>();
                 var eventBusSubcriptionsManager = sp.GetRequiredService<IEventBusSubscriptionsManager>();
                 string subscriptionName = configuration["SubscriptionClientName"];
-    
+
                 return new EventBusServiceBus(serviceBusPersisterConnection, logger,
                     eventBusSubcriptionsManager, iLifetimeScope, subscriptionName);
             });
-    
         }
         else
         {
@@ -146,17 +195,18 @@ public static class CustomExtensionMethods
                 var iLifetimeScope = sp.GetRequiredService<ILifetimeScope>();
                 var logger = sp.GetRequiredService<ILogger<EventBusRabbitMQ>>();
                 var eventBusSubcriptionsManager = sp.GetRequiredService<IEventBusSubscriptionsManager>();
-    
+
                 var retryCount = 5;
                 if (!string.IsNullOrEmpty(configuration["EventBusRetryCount"]))
                 {
                     retryCount = int.Parse(configuration["EventBusRetryCount"]);
                 }
-    
-                return new EventBusRabbitMQ(rabbitMQPersistentConnection, logger, iLifetimeScope, eventBusSubcriptionsManager, subscriptionClientName, retryCount);
+
+                return new EventBusRabbitMQ(rabbitMQPersistentConnection, logger, iLifetimeScope,
+                    eventBusSubcriptionsManager, subscriptionClientName, retryCount);
             });
         }
-    
+
         services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
 
         return services;

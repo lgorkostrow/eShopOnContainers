@@ -9,7 +9,8 @@ public class OrderStatusChangedToAwaitingValidationDomainEventHandler
     private readonly IOrderingIntegrationEventService _orderingIntegrationEventService;
 
     public OrderStatusChangedToAwaitingValidationDomainEventHandler(
-        IOrderRepository orderRepository, ILoggerFactory logger,
+        IOrderRepository orderRepository, 
+        ILoggerFactory logger,
         IBuyerRepository buyerRepository,
         IOrderingIntegrationEventService orderingIntegrationEventService)
     {
