@@ -19,7 +19,9 @@ public record Order
     public string zipcode { get; init; }
     public string country { get; init; }
     public List<Orderitem> orderitems { get; set; }
-    public decimal total { get; set; }
+    public decimal total { get; init; }
+    public decimal discount { get; init; }
+    public decimal totalWithDiscount { get; init; }
 }
 
 public record OrderSummary
@@ -27,7 +29,7 @@ public record OrderSummary
     public int ordernumber { get; init; }
     public DateTime date { get; init; }
     public string status { get; init; }
-    public double total { get; init; }
+    public decimal total { get; init; }
 }
 
 public record CardType
