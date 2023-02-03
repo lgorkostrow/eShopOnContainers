@@ -1,3 +1,4 @@
+using Coupon.Domain.AggregatesModel;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.IdGenerators;
@@ -8,6 +9,7 @@ namespace Coupon.Infrastructure.Mongo;
 public class CouponContext
 {
     public IMongoCollection<Domain.AggregatesModel.Coupon> Coupons => _database.GetCollection<Domain.AggregatesModel.Coupon>("CouponCollection");
+    public IMongoCollection<Benefits> Benefits => _database.GetCollection<Benefits>("BenefitsCollection");
     
     private readonly IMongoDatabase _database = null;
 
@@ -28,6 +30,12 @@ public class CouponContext
     private void ConfigureModels()
     {
         BsonClassMap.RegisterClassMap<Domain.AggregatesModel.Coupon>(cm => 
+        {
+            cm.AutoMap();
+            cm.MapIdMember(c => c.Id).SetIdGenerator(CombGuidGenerator.Instance);
+        });
+        
+        BsonClassMap.RegisterClassMap<Benefits>(cm => 
         {
             cm.AutoMap();
             cm.MapIdMember(c => c.Id).SetIdGenerator(CombGuidGenerator.Instance);

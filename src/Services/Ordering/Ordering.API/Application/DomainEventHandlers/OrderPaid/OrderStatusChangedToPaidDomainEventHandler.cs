@@ -36,7 +36,9 @@ public class OrderStatusChangedToPaidDomainEventHandler
         var orderStatusChangedToPaidIntegrationEvent = new OrderStatusChangedToPaidIntegrationEvent(
             orderStatusChangedToPaidDomainEvent.OrderId,
             order.OrderStatus.Name,
+            buyer.Id,
             buyer.Name,
+            order.CalculatePriceWithDiscount(),
             orderStockList);
 
         await _orderingIntegrationEventService.AddAndSaveEventAsync(orderStatusChangedToPaidIntegrationEvent);
