@@ -4,7 +4,7 @@ namespace Coupon.Domain.AggregatesModel;
 
 public class Coupon : BaseEntity
 {
-    public Guid Id { get; set; }
+    public Guid Id { get; private set; }
     public string Code { get; private set; }
     public decimal Discount { get; private set; }
     public bool Consumed { get; private set; }

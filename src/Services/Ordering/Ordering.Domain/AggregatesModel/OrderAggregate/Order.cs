@@ -157,6 +157,21 @@ public class Order
         }
     }
 
+    public decimal CalculatePriceWithDiscount()
+    {
+        decimal total = 0;
+        _orderItems.ForEach(x => total += x.GetUnits() * x.GetUnitPrice());
+
+        if (Discount is not null && Discount.DiscountConfirmed)
+        {
+            total = total > Discount.Amount
+                ? total - Discount.Amount
+                : 1;
+        }
+        
+        return total;
+    }
+
     public void SetValidatedStatus()
     {
         if (_orderStatusId != OrderStatus.AwaitingStockValidation.Id && _orderStatusId != OrderStatus.AwaitingCouponValidation.Id)

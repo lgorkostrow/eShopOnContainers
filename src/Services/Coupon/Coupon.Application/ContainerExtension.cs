@@ -13,6 +13,7 @@ public static class ContainerExtension
         serviceCollection.AddMediatR(typeof(ContainerExtension).Assembly);
 
         serviceCollection.AddTransient<IIntegrationEventHandler<OrderStatusChangedToAwaitingCouponValidationIntegrationEvent>, OrderStatusChangedToAwaitingCouponValidationIntegrationEventHandler>();
+        serviceCollection.AddTransient<IIntegrationEventHandler<OrderStatusChangedToPaidIntegrationEvent>, OrderStatusChangedToPaidIntegrationEventHandler>();
     }
 
     public static void RegisterApplicationIntegrationEvents(this IApplicationBuilder builder)
@@ -20,5 +21,6 @@ public static class ContainerExtension
         var eventBus = builder.ApplicationServices.GetRequiredService<IEventBus>();
         
         eventBus.Subscribe<OrderStatusChangedToAwaitingCouponValidationIntegrationEvent, IIntegrationEventHandler<OrderStatusChangedToAwaitingCouponValidationIntegrationEvent>>();
+        eventBus.Subscribe<OrderStatusChangedToPaidIntegrationEvent, IIntegrationEventHandler<OrderStatusChangedToPaidIntegrationEvent>>();
     }
 }

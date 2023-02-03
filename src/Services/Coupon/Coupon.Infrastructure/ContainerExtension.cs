@@ -14,5 +14,6 @@ public static class ContainerExtension
 
         serviceCollection.AddSingleton<CouponContext>();
         serviceCollection.AddSingleton<ICouponRepository, CouponRepository>();
+        serviceCollection.AddSingleton<IBenefitsRepository, BenefitsRepository>();
     }
 }

@@ -47,7 +47,7 @@ public class ApplyCouponForOrderCommand : IRequest
         {
             coupon.Consume(orderId);
             
-            await _repository.Update(coupon, cancellationToken);
+            await _repository.UpdateAsync(coupon, cancellationToken);
 
             var couponConfirmedIntegrationEvent = new OrderCouponConfirmedIntegrationEvent(
                 orderId,

@@ -18,7 +18,7 @@ public class CouponRepository : ICouponRepository
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public Task Update(Domain.AggregatesModel.Coupon coupon, CancellationToken cancellationToken)
+    public Task UpdateAsync(Domain.AggregatesModel.Coupon coupon, CancellationToken cancellationToken)
     {
         var filter = Builders<Domain.AggregatesModel.Coupon>.Filter.Eq("Id", coupon.Id);
         
