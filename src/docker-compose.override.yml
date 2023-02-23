@@ -20,14 +20,44 @@ services:
     ports:
       - "5433:1433"
     volumes:
-      - eshop-sqldata:/var/opt/mssql
-
+      - eshop-sqldata:/var/opt/mssql      
+    
   nosqldata:
-    ports:
-      - "27017:27017"
+    image: mongo:6.0.4
     volumes:
       - eshop-nosqldata:/data/db
+      - ./scripts/rs-init.sh:/scripts/rs-init.sh
+      - ./scripts/init.js:/scripts/init.js
+#    networks:
+#      - mongo-network
+    ports:
+      - "27017:27017"
+    depends_on:
+      - nosqldata2
+      - nosqldata3
+    links:
+      - nosqldata2
+      - nosqldata3
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "dbrs" ]
 
+  nosqldata2:
+    image: mongo:6.0.4
+#    networks:
+#      - mongo-network
+    ports:
+      - "27018:27017"
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "dbrs" ]
+  nosqldata3:
+    image: mongo:6.0.4
+#    networks:
+#      - mongo-network
+    ports:
+      - "27019:27017"
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "dbrs" ]
+  
   basketdata:
     ports:
       - "6379:6379"
@@ -104,7 +134,7 @@ services:
   coupon-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - MongoConfiguration:ConnectionString=mongodb://nosqldata
+      - MongoConfiguration:ConnectionString=mongodb://nosqldata,nosqldata2,nosqldata3/?replicaSet=dbrs&connectTimeoutMS=300000
       - MongoConfiguration:CouponMongoDatabase=CouponDb
       - EventBusConnection=${ESHOP_AZURE_SERVICE_BUS:-rabbitmq}
       - EventBusUserName=${ESHOP_SERVICE_BUS_USERNAME}

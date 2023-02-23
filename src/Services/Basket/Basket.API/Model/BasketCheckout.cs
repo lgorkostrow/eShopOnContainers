@@ -29,4 +29,6 @@ public class BasketCheckout
     public string CouponCode { get; set; }
     
     public decimal? Discount { get; set; }
+    public bool PayWithBonusPoints { get; set; }
+    public decimal? BonusPointsAmount { get; set; }
 }

@@ -112,7 +112,10 @@ export class BasketService {
         basketCheckout.expiration = order.expiration;
         basketCheckout.couponCode = 'DISC-20';
         basketCheckout.discount = 20;
-
+        
+        basketCheckout.payWithBonusPoints = true;
+        basketCheckout.bonusPointsAmount = 5.5;
+        
         return basketCheckout;
     }
 

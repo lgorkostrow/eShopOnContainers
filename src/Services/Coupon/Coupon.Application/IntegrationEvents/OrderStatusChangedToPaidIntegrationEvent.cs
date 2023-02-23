@@ -9,7 +9,7 @@ namespace Coupon.Application.IntegrationEvents;
 public record OrderStatusChangedToPaidIntegrationEvent(
     int OrderId,
     string OrderStatus,
-    int BuyerId,
+    string BuyerId,
     string BuyerName,
     decimal TotalPrice
 ) : IntegrationEvent;

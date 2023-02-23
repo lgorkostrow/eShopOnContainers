@@ -7,19 +7,20 @@ public class BasketController : ControllerBase
 {
     private readonly IBasketRepository _repository;
     private readonly IIdentityService _identityService;
-    private readonly IEventBus _eventBus;
+    private readonly IBasketCheckoutService _basketCheckoutService;
     private readonly ILogger<BasketController> _logger;
 
     public BasketController(
         ILogger<BasketController> logger,
         IBasketRepository repository,
         IIdentityService identityService,
-        IEventBus eventBus)
+        IBasketCheckoutService basketCheckoutService    
+    )
     {
         _logger = logger;
         _repository = repository;
         _identityService = identityService;
-        _eventBus = eventBus;
+        _basketCheckoutService = basketCheckoutService;
     }
 
     [HttpGet("{id}")]
@@ -45,51 +46,14 @@ public class BasketController : ControllerBase
     public async Task<ActionResult> CheckoutAsync([FromBody] BasketCheckout basketCheckout, [FromHeader(Name = "x-requestid")] string requestId)
     {
         var userId = _identityService.GetUserIdentity();
-
+        var userName = HttpContext.User.FindFirst(x => x.Type == ClaimTypes.Name).Value;
         basketCheckout.RequestId = (Guid.TryParse(requestId, out Guid guid) && guid != Guid.Empty) ?
             guid : basketCheckout.RequestId;
 
-        var basket = await _repository.GetBasketAsync(userId);
-
-        if (basket == null)
+        var result = await _basketCheckoutService.AcceptBasketCheckout(userId, userName, basketCheckout);
+        if (result == false)
         {
             return BadRequest();
-        }
-
-        var userName = this.HttpContext.User.FindFirst(x => x.Type == ClaimTypes.Name).Value;
-
-        var eventMessage = new UserCheckoutAcceptedIntegrationEvent(
-            userId, 
-            userName, 
-            basketCheckout.City, 
-            basketCheckout.Street,
-            basketCheckout.State, 
-            basketCheckout.Country, 
-            basketCheckout.ZipCode, 
-            basketCheckout.CardNumber,
-            basketCheckout.CardHolderName,
-            basketCheckout.CardExpiration,
-            basketCheckout.CardSecurityNumber,
-            basketCheckout.CardTypeId,
-            basketCheckout.Buyer,
-            basketCheckout.RequestId,
-            basketCheckout.CouponCode,
-            basketCheckout.Discount,
-            basket
-        );
-
-        // Once basket is checkout, sends an integration event to
-        // ordering.api to convert basket to order and proceeds with
-        // order creation process
-        try
-        {
-            _eventBus.Publish(eventMessage);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "ERROR Publishing integration event: {IntegrationEventId} from {AppName}", eventMessage.Id, Program.AppName);
-
-            throw;
         }
 
         return Accepted();

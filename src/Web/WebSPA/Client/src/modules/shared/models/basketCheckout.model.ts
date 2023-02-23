@@ -15,4 +15,6 @@
     couponCode: string;
     discount: number;
     total: number;
+    payWithBonusPoints: boolean;
+    bonusPointsAmount: number | null;
 }

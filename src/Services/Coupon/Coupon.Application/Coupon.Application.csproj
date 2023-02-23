@@ -17,6 +17,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\..\BuildingBlocks\EventBus\EventBus\EventBus.csproj" />
       <ProjectReference Include="..\Coupon.Domain\Coupon.Domain.csproj" />
+      <ProjectReference Include="..\Coupon.Infrastructure\Coupon.Infrastructure.csproj" />
       <ProjectReference Include="..\Coupon.Shared\Coupon.Shared.csproj" />
     </ItemGroup>
 
