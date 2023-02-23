@@ -132,6 +132,8 @@ public class Startup
         });
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         services.AddTransient<IBasketRepository, RedisBasketRepository>();
+        services.AddTransient<IBasketCheckoutRepository, RedisBasketCheckoutRepository>();
+        services.AddTransient<IBasketCheckoutService, BasketCheckoutService>();
         services.AddTransient<IIdentityService, IdentityService>();
 
         services.AddOptions();
@@ -273,6 +275,8 @@ public class Startup
 
         services.AddTransient<ProductPriceChangedIntegrationEventHandler>();
         services.AddTransient<OrderStartedIntegrationEventHandler>();
+        services.AddTransient<IIntegrationEventHandler<CouponForBasketCheckoutCreatedIntegrationEvent>, CouponForBasketCheckoutCreatedIntegrationEventHandler>();
+        services.AddTransient<IIntegrationEventHandler<CouponCreationForBasketCheckoutFailedIntegrationEvent>, CouponCreationForBasketCheckoutFailedIntegrationEventHandler>();
     }
 
     private void ConfigureEventBus(IApplicationBuilder app)
@@ -281,5 +285,7 @@ public class Startup
 
         eventBus.Subscribe<ProductPriceChangedIntegrationEvent, ProductPriceChangedIntegrationEventHandler>();
         eventBus.Subscribe<OrderStartedIntegrationEvent, OrderStartedIntegrationEventHandler>();
+        eventBus.Subscribe<CouponForBasketCheckoutCreatedIntegrationEvent, IIntegrationEventHandler<CouponForBasketCheckoutCreatedIntegrationEvent>>();
+        eventBus.Subscribe<CouponCreationForBasketCheckoutFailedIntegrationEvent, IIntegrationEventHandler<CouponCreationForBasketCheckoutFailedIntegrationEvent>>();
     }
 }

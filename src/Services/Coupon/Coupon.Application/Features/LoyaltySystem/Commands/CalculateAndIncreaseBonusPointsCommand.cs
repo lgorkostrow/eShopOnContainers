@@ -5,7 +5,7 @@ namespace Coupon.Application.Features.LoyaltySystem.Commands;
 
 public class CalculateAndIncreaseBonusPointsCommand : IRequest
 {
-    public int UserId { get; set; }
+    public string UserId { get; set; }
     public decimal OrderTotalPrice { get; set; }
 
     public class CalculateAndIncreaseBonusPointsCommandHandler : IRequestHandler<CalculateAndIncreaseBonusPointsCommand>

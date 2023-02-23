@@ -14,6 +14,7 @@ public static class ContainerExtension
 
         serviceCollection.AddTransient<IIntegrationEventHandler<OrderStatusChangedToAwaitingCouponValidationIntegrationEvent>, OrderStatusChangedToAwaitingCouponValidationIntegrationEventHandler>();
         serviceCollection.AddTransient<IIntegrationEventHandler<OrderStatusChangedToPaidIntegrationEvent>, OrderStatusChangedToPaidIntegrationEventHandler>();
+        serviceCollection.AddTransient<IIntegrationEventHandler<BasketCheckoutWithBonusPaymentReceivedIntegrationEvent>, BasketCheckoutWithBonusPaymentReceivedIntegrationEventHandler>();
     }
 
     public static void RegisterApplicationIntegrationEvents(this IApplicationBuilder builder)
@@ -22,5 +23,6 @@ public static class ContainerExtension
         
         eventBus.Subscribe<OrderStatusChangedToAwaitingCouponValidationIntegrationEvent, IIntegrationEventHandler<OrderStatusChangedToAwaitingCouponValidationIntegrationEvent>>();
         eventBus.Subscribe<OrderStatusChangedToPaidIntegrationEvent, IIntegrationEventHandler<OrderStatusChangedToPaidIntegrationEvent>>();
+        eventBus.Subscribe<BasketCheckoutWithBonusPaymentReceivedIntegrationEvent, IIntegrationEventHandler<BasketCheckoutWithBonusPaymentReceivedIntegrationEvent>>();
     }
 }

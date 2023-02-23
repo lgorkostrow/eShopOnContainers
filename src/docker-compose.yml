@@ -9,7 +9,13 @@ services:
     image: mcr.microsoft.com/azure-sql-edge:latest 
 
   nosqldata:
-    image: mongo
+    image: mongo:6.0.4
+  
+  nosqldata2:
+    image: mongo:6.0.4
+    
+  nosqldata3:
+    image: mongo:6.0.4  
 
   basketdata:
     image: redis:alpine
@@ -52,6 +58,8 @@ services:
     depends_on:
       - sqldata
       - nosqldata
+      - nosqldata2
+      - nosqldata3
       - rabbitmq      
 
   ordering-api:

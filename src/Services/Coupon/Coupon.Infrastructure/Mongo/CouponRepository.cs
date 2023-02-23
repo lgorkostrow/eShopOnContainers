@@ -17,6 +17,11 @@ public class CouponRepository : ICouponRepository
             .Find(x => x.Code == code)
             .FirstOrDefaultAsync(cancellationToken);
     }
+    
+    public async Task CreateAsync(Domain.AggregatesModel.Coupon coupon, CancellationToken cancellationToken)
+    {
+        await _context.Coupons.InsertOneAsync(coupon, null, cancellationToken);
+    }
 
     public Task UpdateAsync(Domain.AggregatesModel.Coupon coupon, CancellationToken cancellationToken)
     {

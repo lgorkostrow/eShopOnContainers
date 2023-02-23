@@ -12,7 +12,7 @@ public class BenefitsRepository : IBenefitsRepository
         _context = context;
     }
     
-    public Task<Benefits?> FindByUserIdAsync(int userId, CancellationToken cancellationToken)
+    public Task<Benefits?> FindByUserIdAsync(string userId, CancellationToken cancellationToken)
     {
         return _context.Benefits
             .Find(x => x.UserId == userId)

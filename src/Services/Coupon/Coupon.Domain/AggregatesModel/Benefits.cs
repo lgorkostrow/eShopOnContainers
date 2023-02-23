@@ -8,10 +8,10 @@ public class Benefits : BaseEntity
     public const int CashbackPercent = 5;
     
     public Guid Id { get; private set; }
-    public int UserId { get; private set; }
+    public string UserId { get; private set; }
     public decimal BonusPoints { get; private set; }
 
-    public Benefits(Guid id, int userId, decimal bonusPoints)
+    public Benefits(Guid id, string userId, decimal bonusPoints)
     {
         Id = id;
         UserId = userId;
